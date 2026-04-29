@@ -1,56 +1,89 @@
 # Sprint Status Template
-# This is an EXAMPLE showing the expected format
-# The actual file will be generated with all epics/stories from your epic files
-
-# generated: {date}
-# project: {project_name}
-# project_key: {project_key}
-# tracking_system: {tracking_system}
-# story_location: {story_location}
-
+# This is an EXAMPLE showing the unified three-section schema format.
+# The actual file will be generated/refreshed from your epics and bug files.
+#
+# Schema version: 1.0 (Story 17.9)
+# Architecture: Decision P2-11
+#
+# SECTIONS:
+#   epics   — map keyed by epic-N; regenerated each planning run (with status preservation)
+#   backlog — array of items (stories + bugs); additive — new items appended, existing preserved
+#   sprints — map keyed by sprint-N; NEVER modified by this skill
+#
 # STATUS DEFINITIONS:
-# ==================
-# Epic Status:
-#   - backlog: Epic not yet started
-#   - in-progress: Epic actively being worked on
-#   - done: All stories in epic completed
-#
-# Story Status:
-#   - backlog: Story only exists in epic file
-#   - ready-for-dev: Story file created, ready for development
-#   - in-progress: Developer actively working on implementation
-#   - review: Implementation complete, ready for review
-#   - done: Story completed
-#
-# Retrospective Status:
-#   - optional: Can be completed but not required
-#   - done: Retrospective has been completed
-#
-# WORKFLOW NOTES:
-# ===============
-# - Mark epic as 'in-progress' when starting work on its first story
-# - Developer typically creates next story ONLY after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then Dev runs code-review (fresh context, ideally different LLM)
+# ===================
+# Epic Status:   backlog → in-progress → done  (on-hold: bidirectional; cancelled: terminal)
+# Item Status:   backlog → ready-for-dev → in-progress → review → done
+#                (on-hold: bidirectional pause; cancelled: terminal)
+# Retrospective: optional → done  (null: not applicable)
 
-# EXAMPLE STRUCTURE (your actual epics/stories will replace these):
-
-generated: 05-06-2-2025 21:30
-last_updated: 05-06-2-2025 21:30
-project: My Awesome Project
+generated: "2026-01-15T10:00:00Z"
+last_updated: "2026-01-15T10:00:00Z"
+project: "Example Project"
 project_key: NOKEY
 tracking_system: file-system
-story_location: "{story_location}"
+story_location: "_bmad-output/implementation-artifacts"
 
-development_status:
-  epic-1: backlog
-  1-1-user-authentication: done
-  1-2-account-management: ready-for-dev
-  1-3-plant-data-model: backlog
-  1-4-add-plant-manual: backlog
-  epic-1-retrospective: optional
+# ── Epics ──────────────────────────────────────────────────────────────────────
+# Map keyed by epic-N. Fully regenerated each run; epic statuses are never downgraded.
+epics:
+  epic-1:
+    status: in-progress
+    retrospective: optional
+  epic-2:
+    status: backlog
+    retrospective: optional
+  epic-3:
+    status: on-hold
+    retrospective: null
 
-  epic-2: backlog
-  2-1-personality-system: backlog
-  2-2-chat-interface: backlog
-  2-3-llm-integration: backlog
-  epic-2-retrospective: optional
+# ── Backlog ───────────────────────────────────────────────────────────────────
+# Ordered array — position 0 = highest priority. Priority field must match position.
+# Only items NOT in a sprint and NOT archived in done/ appear here.
+backlog:
+  - id: "1-2-account-management"
+    type: story
+    epic: 1
+    title: "Account Management"
+    priority: 1
+    status: ready-for-dev
+    severity: null
+  - id: "BUG-login-crash"
+    type: bug
+    epic: null
+    title: "Fix login crash on empty password"
+    priority: 2
+    status: backlog
+    severity: critical
+  - id: "2-1-personality-system"
+    type: story
+    epic: 2
+    title: "Personality System"
+    priority: 3
+    status: backlog
+    severity: null
+  - id: "2-2-chat-interface"
+    type: story
+    epic: 2
+    title: "Chat Interface"
+    priority: 4
+    status: backlog
+    severity: null
+
+# ── Sprints ───────────────────────────────────────────────────────────────────
+# Map keyed by sprint-N. This skill NEVER modifies the sprints section.
+# Use add-sprint, add-to-sprint, modify-sprint, close-sprint to manage sprints.
+sprints:
+  sprint-1:
+    name: "Sprint 1 — Foundation"
+    status: active
+    capacity: 4
+    start: "2026-01-15"
+    end: "2026-01-28"
+    items:
+      - id: "1-1-user-authentication"
+        type: story
+        epic: 1
+        title: "User Authentication"
+        status: in-progress
+        severity: null

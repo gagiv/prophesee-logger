@@ -1,0 +1,320 @@
+{
+  "manifestVersion": "1.2.0",
+  "agent": "bmm-cyber",
+  "agents": [
+    "bmm-cyber"
+  ],
+  "scope": "project",
+  "skills": {
+    "add-sprint": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:24.884Z",
+      "updatedAt": "2026-04-29T12:29:24.884Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "add-to-sprint": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:25.039Z",
+      "updatedAt": "2026-04-29T12:29:25.039Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "ai-audit-trail": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:25.216Z",
+      "updatedAt": "2026-04-29T12:29:25.216Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "auto-bug-detection": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:25.385Z",
+      "updatedAt": "2026-04-29T12:29:25.385Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "bmad-sprint-planning": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:25.581Z",
+      "updatedAt": "2026-04-29T12:29:25.581Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "bmad-sprint-status": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:25.782Z",
+      "updatedAt": "2026-04-29T12:29:25.782Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cleanup-done": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:25.973Z",
+      "updatedAt": "2026-04-29T12:29:25.973Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "close-sprint": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:26.158Z",
+      "updatedAt": "2026-04-29T12:29:26.158Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cmake-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:26.397Z",
+      "updatedAt": "2026-04-29T12:29:26.397Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "code-documentation": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:26.688Z",
+      "updatedAt": "2026-04-29T12:29:26.688Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "code-review": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:26.889Z",
+      "updatedAt": "2026-04-29T12:29:26.889Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "commit-message": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:27.050Z",
+      "updatedAt": "2026-04-29T12:29:27.050Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cpp-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:27.253Z",
+      "updatedAt": "2026-04-29T12:29:27.253Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cpp-concurrency-safety": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:27.466Z",
+      "updatedAt": "2026-04-29T12:29:27.466Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cpp-const-correctness": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:27.681Z",
+      "updatedAt": "2026-04-29T12:29:27.681Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cpp-memory-handling": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:27.942Z",
+      "updatedAt": "2026-04-29T12:29:27.942Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cpp-modern-composition": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:28.222Z",
+      "updatedAt": "2026-04-29T12:29:28.222Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "cpp-robust-interfaces": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:28.470Z",
+      "updatedAt": "2026-04-29T12:29:28.470Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "create-hardened-docker-skill": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:28.726Z",
+      "updatedAt": "2026-04-29T12:29:28.726Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "csharp-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:28.897Z",
+      "updatedAt": "2026-04-29T12:29:28.897Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "docker-hardening-verification": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:29.078Z",
+      "updatedAt": "2026-04-29T12:29:29.078Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "docker-image-signing": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:29.291Z",
+      "updatedAt": "2026-04-29T12:29:29.291Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "document-revision-history": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:29.509Z",
+      "updatedAt": "2026-04-29T12:29:29.509Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "generate-backlog": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:29.743Z",
+      "updatedAt": "2026-04-29T12:29:29.743Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "git-workflow-skill": {
+      "version": "2.1.0",
+      "installedAt": "2026-04-29T12:29:29.987Z",
+      "updatedAt": "2026-04-29T12:29:29.987Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "js-ts-dependency-mgmt": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:30.245Z",
+      "updatedAt": "2026-04-29T12:29:30.245Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "js-ts-security-skill": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:30.530Z",
+      "updatedAt": "2026-04-29T12:29:30.530Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "logging-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:30.794Z",
+      "updatedAt": "2026-04-29T12:29:30.794Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "modify-sprint": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:30.962Z",
+      "updatedAt": "2026-04-29T12:29:30.962Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "open-presentation": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:31.122Z",
+      "updatedAt": "2026-04-29T12:29:31.122Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "opentelemetry-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:31.345Z",
+      "updatedAt": "2026-04-29T12:29:31.345Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "prioritize-backlog": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:31.561Z",
+      "updatedAt": "2026-04-29T12:29:31.561Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "python-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:31.739Z",
+      "updatedAt": "2026-04-29T12:29:31.739Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "python-dependency-mgmt": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:31.963Z",
+      "updatedAt": "2026-04-29T12:29:31.963Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "python-security-skill": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:32.199Z",
+      "updatedAt": "2026-04-29T12:29:32.199Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "remove-from-sprint": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:32.387Z",
+      "updatedAt": "2026-04-29T12:29:32.387Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "self-signed-cert": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:32.615Z",
+      "updatedAt": "2026-04-29T12:29:32.615Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "skill-creator": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:32.947Z",
+      "updatedAt": "2026-04-29T12:29:32.947Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "sprint-status-view": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:33.180Z",
+      "updatedAt": "2026-04-29T12:29:33.180Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "story-status-lookup": {
+      "version": "2.0.0",
+      "installedAt": "2026-04-29T12:29:33.392Z",
+      "updatedAt": "2026-04-29T12:29:33.392Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "test-accompanied-development": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:33.597Z",
+      "updatedAt": "2026-04-29T12:29:33.597Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "test-generator": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:33.762Z",
+      "updatedAt": "2026-04-29T12:29:33.762Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "vercel-react-best-practices": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:33.943Z",
+      "updatedAt": "2026-04-29T12:29:33.943Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    },
+    "verify-hardened-docker-skill": {
+      "version": "1.0.0",
+      "installedAt": "2026-04-29T12:29:34.157Z",
+      "updatedAt": "2026-04-29T12:29:34.157Z",
+      "installerVersion": "3.8.0",
+      "agentVersion": "1.0.0"
+    }
+  },
+  "toolVersion": "3.8.0",
+  "bmadVersion": null
+}

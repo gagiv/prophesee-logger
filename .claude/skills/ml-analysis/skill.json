@@ -1,0 +1,7 @@
+{
+  "name": "ML Experiment Analysis",
+  "description": "Analyzes experiment results against the TECHSPEC, evaluates the hypothesis, and identifies failure modes.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Analysis", "Evaluation", "Hypothesis Testing", "Demerzel"]
+}

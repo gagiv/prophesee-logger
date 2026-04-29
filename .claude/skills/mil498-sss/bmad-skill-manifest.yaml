@@ -1,0 +1,5 @@
+type: skill
+name: mil498-sss
+module: ma-skills
+description: Generate MIL-STD-498 System/Subsystem Specification (SSS)
+version: "1.0.0"

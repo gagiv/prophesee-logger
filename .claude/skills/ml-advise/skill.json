@@ -1,0 +1,7 @@
+{
+  "name": "ML Experiment Advisor",
+  "description": "Searches past experiments, retrospectives, and TechSpecs to surface relevant findings and failure warnings.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Advice", "Advisor", "Knowledge", "Demerzel"]
+}

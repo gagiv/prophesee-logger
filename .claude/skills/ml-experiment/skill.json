@@ -1,0 +1,7 @@
+{
+  "name": "ML Experiment Execution",
+  "description": "Executes training runs against a locked TECHSPEC and logs metrics to W&B/MLflow/ClearML.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Experiment", "Training", "Logging", "Demerzel"]
+}

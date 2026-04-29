@@ -1,0 +1,7 @@
+{
+  "name": "ML Pre-Experiment TechSpec",
+  "description": "Produces a pre-experiment contract that pins hypotheses, parameters, and success criteria.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "TechSpec", "Experiment Design", "Contract"]
+}

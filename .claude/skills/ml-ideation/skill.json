@@ -1,0 +1,7 @@
+{
+  "name": "ML Ideation & Framing",
+  "description": "Frames the Machine Learning problem, defines the Research Thesis, and produces the PRD requirements.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Planning", "Ideation"]
+}

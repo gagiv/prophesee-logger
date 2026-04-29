@@ -1,0 +1,61 @@
+#!/bin/bash
+# commit-msg hook - Validate conventional commit format
+# Install: cp this file to .git/hooks/commit-msg && chmod +x .git/hooks/commit-msg
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+COMMIT_MSG_FILE="$1"
+COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
+
+# Skip merge commits
+if echo "$COMMIT_MSG" | grep -qE '^Merge '; then
+    exit 0
+fi
+
+# Skip fixup/squash commits
+if echo "$COMMIT_MSG" | grep -qE '^(fixup|squash)! '; then
+    exit 0
+fi
+
+# Conventional commit regex
+# Format: type(scope): description
+# Types: feat, fix, chore, docs, refactor, test
+PATTERN='^(feat|fix|chore|docs|refactor|test)(\([a-zA-Z0-9_-]+\))?: .{1,}'
+
+if ! echo "$COMMIT_MSG" | head -1 | grep -qE "$PATTERN"; then
+    echo -e "${RED}=================================================${NC}"
+    echo -e "${RED}ERROR: Commit message doesn't follow conventional format${NC}"
+    echo -e "${RED}=================================================${NC}"
+    echo ""
+    echo "Your message: $(head -1 "$COMMIT_MSG_FILE")"
+    echo ""
+    echo "Expected format:"
+    echo "  <type>(<scope>): <description>"
+    echo ""
+    echo "Types:"
+    echo "  feat     - New feature"
+    echo "  fix      - Bug fix"
+    echo "  chore    - Maintenance task"
+    echo "  docs     - Documentation"
+    echo "  refactor - Code refactoring"
+    echo "  test     - Tests"
+    echo ""
+    echo "Examples:"
+    echo "  feat(auth): add OAuth2 flow support"
+    echo "  fix(api): handle null response from endpoint"
+    echo "  chore(deps): update Helm dependencies"
+    echo "  docs: update README with deployment steps"
+    echo ""
+    exit 1
+fi
+
+# Check description length (warn if too long)
+FIRST_LINE=$(head -1 "$COMMIT_MSG_FILE")
+if [[ ${#FIRST_LINE} -gt 72 ]]; then
+    echo -e "${YELLOW}WARNING: First line is ${#FIRST_LINE} characters (recommended: 72 max)${NC}"
+fi
+
+exit 0

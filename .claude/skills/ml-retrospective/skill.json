@@ -1,0 +1,7 @@
+{
+  "name": "ML Session Retrospective",
+  "description": "Extracts learnings, metrics, and failure modes from the current session and archives them to the knowledge base.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Retrospective", "Knowledge Capture", "Post-mortem", "Demerzel"]
+}

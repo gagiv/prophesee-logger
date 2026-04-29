@@ -1,0 +1,5 @@
+type: skill
+name: mil498-std
+module: ma-skills
+description: Generate MIL-STD-498 Software Test Description (STD)
+version: "1.0.0"

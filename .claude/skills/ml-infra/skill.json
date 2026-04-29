@@ -1,0 +1,7 @@
+{
+  "name": "ML Infrastructure Build",
+  "description": "Builds all engineering infrastructure (data pipelines, training loops, tracking, eval) for experiments.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Infrastructure", "MLOps", "Data Pipeline", "Training"]
+}

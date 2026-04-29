@@ -1,0 +1,7 @@
+{
+  "name": "ML Detailed Design & Task Breakdown",
+  "description": "Breaks down the architecture into infrastructure (INF-*) and experiment (EXP-*) tasks.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Detailed Design", "Task Breakdown", "INF", "EXP"]
+}
