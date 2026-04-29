@@ -1,0 +1,56 @@
+#!/bin/bash
+# prepare-commit-msg hook - Add template for conventional commits
+# Install: cp this file to .git/hooks/prepare-commit-msg && chmod +x .git/hooks/prepare-commit-msg
+
+COMMIT_MSG_FILE="$1"
+COMMIT_SOURCE="$2"
+
+# Only add template for new commits (not amend, merge, etc.)
+if [[ -z "$COMMIT_SOURCE" ]]; then
+    # Get current branch to suggest type
+    CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    
+    # Extract type from branch name if possible
+    SUGGESTED_TYPE=""
+    if echo "$CURRENT_BRANCH" | grep -qE '^feature/'; then
+        SUGGESTED_TYPE="feat"
+    elif echo "$CURRENT_BRANCH" | grep -qE '^bugfix/'; then
+        SUGGESTED_TYPE="fix"
+    elif echo "$CURRENT_BRANCH" | grep -qE '^hotfix/'; then
+        SUGGESTED_TYPE="fix"
+    elif echo "$CURRENT_BRANCH" | grep -qE '^chore/'; then
+        SUGGESTED_TYPE="chore"
+    fi
+
+    # Only add template if commit message is empty or just comments
+    if ! grep -qv '^#' "$COMMIT_MSG_FILE" 2>/dev/null || [[ ! -s "$COMMIT_MSG_FILE" ]]; then
+        {
+            if [[ -n "$SUGGESTED_TYPE" ]]; then
+                echo "${SUGGESTED_TYPE}(scope): "
+            else
+                echo "type(scope): "
+            fi
+            echo ""
+            echo "# Conventional Commit Format"
+            echo "# --------------------------"
+            echo "# <type>(<scope>): <description>"
+            echo "#"
+            echo "# Types:"
+            echo "#   feat     - New feature"
+            echo "#   fix      - Bug fix"
+            echo "#   chore    - Maintenance"
+            echo "#   docs     - Documentation"
+            echo "#   refactor - Code refactoring"
+            echo "#   test     - Tests"
+            echo "#"
+            echo "# Scope: Component or area (optional)"
+            echo "# Description: Short summary in present tense"
+            echo "#"
+            echo "# Examples:"
+            echo "#   feat(auth): add OAuth2 support"
+            echo "#   fix(api): handle null response"
+        } > "$COMMIT_MSG_FILE"
+    fi
+fi
+
+exit 0

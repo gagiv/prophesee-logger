@@ -1,0 +1,7 @@
+{
+  "name": "ML Exploratory Data Analysis (EDA)",
+  "description": "Performs statistical analysis, establishes performance baselines, and interprets results with the Scientist Demerzel.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Exploratory Data Analysis", "EDA", "Baselines"]
+}

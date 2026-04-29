@@ -1,0 +1,5 @@
+type: skill
+name: mil498-requirement-quality
+module: ma-skills
+description: Evaluate and verify requirements quality against 14 established criteria (Clarity, Single Verb, Structure, Glossary, Necessity, Implementation-Independence, Unambiguity, Completeness, Feasibility, Testability, Stakeholder Alignment, Convention Conformance, Understandability, Precision)
+version: "1.0.0"

@@ -58,21 +58,38 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       <goto anchor="task_check" />
     </check>
 
-    <!-- Sprint-based story discovery -->
+    <!-- Sprint-based story discovery (unified sprint-status.yaml schema) -->
     <check if="{{sprint_status}} file exists">
       <critical>MUST read COMPLETE sprint-status.yaml file from start to end to preserve order</critical>
       <action>Load the FULL file: {{sprint_status}}</action>
       <action>Read ALL lines from beginning to end - do not skip any content</action>
-      <action>Parse the development_status section completely to understand story order</action>
+      <action>Parse the full unified schema: metadata fields, epics section, backlog array, and sprints map</action>
 
-      <action>Find the FIRST story (by reading in order from top to bottom) where:
-        - Key matches pattern: number-number-name (e.g., "1-2-user-auth")
-        - NOT an epic key (epic-X) or retrospective (epic-X-retrospective)
-        - Status value equals "ready-for-dev"
+      <!-- Search active sprints first, then planning sprints, then backlog -->
+      <action>Search for first item with status "ready-for-dev" using this priority order:
+        1. Iterate sprints map entries where sprint.status == "active" (skip "closed" sprints);
+           for each active sprint, iterate its items array and find first item where item.status == "ready-for-dev"
+        2. If not found, iterate sprints map entries where sprint.status == "planning";
+           for each planning sprint, iterate its items array and find first item where item.status == "ready-for-dev"
+        3. If not found, iterate the backlog array and find first item where item.status == "ready-for-dev"
+        Note: items in "closed" sprints are SKIPPED entirely
       </action>
 
-      <check if="no ready-for-dev or in-progress story found">
-        <output>📋 No ready-for-dev stories found in sprint-status.yaml
+      <action>When a ready-for-dev item is found:
+        - Extract item.id as the story_key
+        - Record location context:
+          * If found in a sprint: location_context = "in {sprint-id}" (e.g., "in sprint-3")
+          * If found in backlog: location_context = "in backlog (unassigned)"
+        - Note the item.type field ("story" or "bug") — no key pattern matching needed
+      </action>
+
+      <check if="no ready-for-dev item found in any sprint or backlog">
+        <action>Build sprint status summary from the unified schema:
+          - Count active/planning/closed sprints
+          - Count total backlog items and their statuses
+          - List any in-progress items
+        </action>
+        <output>No ready-for-dev stories found in sprint-status.yaml
 
           **Current Sprint Status:** {{sprint_status_summary}}
 
@@ -82,7 +99,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
           3. Specify a particular story file to develop (provide full path)
           4. Check {{sprint_status}} file to see current sprint status
 
-          💡 **Tip:** Stories in `ready-for-dev` may not have been validated. Consider running `validate-create-story` first for a quality
+          **Tip:** Stories in `ready-for-dev` may not have been validated. Consider running `validate-create-story` first for a quality
           check.
         </output>
         <ask>Choose option [1], [2], [3], or [4], or specify story file path:</ask>
@@ -122,7 +139,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       <action>Read each candidate story file to check Status section</action>
 
       <check if="no ready-for-dev stories found in story files">
-        <output>📋 No ready-for-dev stories found
+        <output>No ready-for-dev stories found
 
           **Available Options:**
           1. Run `create-story` to create next story from epics with comprehensive context
@@ -151,7 +168,9 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       </check>
     </check>
 
-    <action>Store the found story_key (e.g., "1-2-user-authentication") for later status updates</action>
+    <action>Store the found story_key (e.g., "17-10-rework-generate-backlog") for later status updates</action>
+    <action>Store the found location_context (e.g., "in sprint-3" or "in backlog") for later status updates</action>
+    <action>If location_context was not set (e.g., story_path was provided explicitly), set location_context = "unknown location"</action>
     <action>Find matching story file in {implementation_artifacts} using story_key pattern: {{story_key}}.md</action>
     <action>Read COMPLETE story file from discovered path</action>
 
@@ -180,7 +199,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
     <action>Load comprehensive context from story file's Dev Notes section</action>
     <action>Extract developer guidance from Dev Notes: architecture requirements, previous learnings, technical specifications</action>
     <action>Use enhanced story context to inform implementation decisions and approaches</action>
-    <output>✅ **Context Loaded**
+    <output>Context Loaded
       Story and project context available for implementation
     </output>
   </step>
@@ -202,7 +221,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       <action>Count unchecked [ ] review follow-up tasks in "Review Follow-ups (AI)" subsection</action>
       <action>Store list of unchecked review items as {{pending_review_items}}</action>
 
-      <output>⏯️ **Resuming Story After Code Review** ({{review_date}})
+      <output>Resuming Story After Code Review ({{review_date}})
 
         **Review Outcome:** {{review_outcome}}
         **Action Items:** {{unchecked_review_count}} remaining to address
@@ -216,7 +235,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       <action>Set review_continuation = false</action>
       <action>Set {{pending_review_items}} = empty</action>
 
-      <output>🚀 **Starting Fresh Implementation**
+      <output>Starting Fresh Implementation
 
         Story: {{story_key}}
         Story Status: {{current_status}}
@@ -227,35 +246,59 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
   <step n="4" goal="Mark story in-progress" tag="sprint-status">
     <check if="{{sprint_status}} file exists">
+      <critical>MUST read COMPLETE sprint-status.yaml file to preserve all content during write-back</critical>
       <action>Load the FULL file: {{sprint_status}}</action>
-      <action>Read all development_status entries to find {{story_key}}</action>
-      <action>Get current status value for development_status[{{story_key}}]</action>
+      <action>Parse the full unified schema: metadata fields, epics section, backlog array, and sprints map</action>
 
-      <check if="current status == 'ready-for-dev' OR review_continuation == true">
-        <action>Update the story in the sprint status report to = "in-progress"</action>
-        <action>Update last_updated field to current date</action>
-        <output>🚀 Starting work on story {{story_key}}
-          Status updated: ready-for-dev → in-progress
+      <!-- Cross-section search for the story item by id -->
+      <action>Search for item with id == {{story_key}} across BOTH backlog and sprints sections:
+        1. Search all sprints map entries (active sprints first, then planning; skip closed sprints entirely):
+           - Iterate each non-closed sprint's items array, match item.id == {{story_key}}
+        2. If not found in any sprint, search backlog array:
+           - Iterate items, match item.id == {{story_key}}
+        3. When item is found: update {{location_context}} = sprint id (e.g., "in sprint-3") or "in backlog (unassigned)"
+        4. If not found in either location: output error and exit workflow without writing
+      </action>
+
+      <check if="item found AND (current item.status == 'ready-for-dev' OR review_continuation == true)">
+        <action>Update item.status = "in-progress" in-place (preserve all other fields: id, type, epic, title, priority if present, severity)</action>
+        <action>Update last_updated metadata field to current ISO-8601 timestamp</action>
+        <action>Write back the FULL file preserving ALL sections (epics, backlog, sprints) and ALL comments</action>
+        <output>Starting work on story {{story_key}} ({{location_context}})
+          Status updated: ready-for-dev -> in-progress
         </output>
       </check>
 
-      <check if="current status == 'in-progress'">
-        <output>⏯️ Resuming work on story {{story_key}}
+      <check if="item found AND current item.status == 'in-progress'">
+        <output>Resuming work on story {{story_key}} ({{location_context}})
           Story is already marked in-progress
         </output>
       </check>
 
-      <check if="current status is neither ready-for-dev nor in-progress">
-        <output>⚠️ Unexpected story status: {{current_status}}
+      <check if="item found AND current item.status is neither ready-for-dev nor in-progress">
+        <output>Unexpected story status: {{current_status}}
           Expected ready-for-dev or in-progress. Continuing anyway...
         </output>
       </check>
 
-      <action>Store {{current_sprint_status}} for later use</action>
+      <check if="item NOT found in any section of sprint-status.yaml">
+        <!-- Check done archive -->
+        <action>Check for file at {implementation_artifacts}/done/{{story_key}}.md</action>
+        <check if="done archive file found">
+          <output>HALT: Story {{story_key}} has been archived (done). It cannot be developed again without manual re-introduction to the backlog.</output>
+          <action>HALT</action>
+        </check>
+        <check if="done archive file NOT found">
+          <output>HALT: Story {{story_key}} not found in sprint-status.yaml. It may not yet have been added to the backlog. Run sprint planning or generate-backlog first.</output>
+          <action>HALT</action>
+        </check>
+      </check>
+
+      <action>Store {{current_sprint_status}} for later use (the item's current status or "found-and-updated")</action>
     </check>
 
     <check if="{{sprint_status}} file does NOT exist">
-      <output>ℹ️ No sprint status file exists - story progress will be tracked in story file only</output>
+      <output>No sprint status file exists - story progress will be tracked in story file only</output>
       <action>Set {{current_sprint_status}} = "no-sprint-tracking"</action>
     </check>
   </step>
@@ -329,7 +372,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       <action>Find matching action item in "Senior Developer Review (AI) → Action Items" section by matching description</action>
       <action>Mark that action item checkbox [x] as resolved</action>
 
-      <action>Add to Dev Agent Record → Completion Notes: "✅ Resolved review finding [{{severity}}]: {{description}}"</action>
+      <action>Add to Dev Agent Record → Completion Notes: "Resolved review finding [{{severity}}]: {{description}}"</action>
     </check>
 
     <!-- ONLY MARK COMPLETE IF ALL VALIDATION PASS -->
@@ -383,24 +426,40 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
     <!-- Mark story ready for review - sprint status conditional -->
     <check if="{sprint_status} file exists AND {{current_sprint_status}} != 'no-sprint-tracking'">
+      <critical>MUST read COMPLETE sprint-status.yaml file to preserve all content during write-back</critical>
       <action>Load the FULL file: {sprint_status}</action>
-      <action>Find development_status key matching {{story_key}}</action>
-      <action>Verify current status is "in-progress" (expected previous state)</action>
-      <action>Update development_status[{{story_key}}] = "review"</action>
-      <action>Update last_updated field to current date</action>
-      <action>Save file, preserving ALL comments and structure including STATUS DEFINITIONS</action>
-      <output>✅ Story status updated to "review" in sprint-status.yaml</output>
+      <action>Parse the full unified schema: metadata fields, epics section, backlog array, and sprints map</action>
+
+      <!-- Cross-section search for the story item by id -->
+      <action>Search for item with id == {{story_key}} across BOTH backlog and sprints sections:
+        1. Search all sprints map entries (active sprints first, then planning; skip closed sprints entirely):
+           - Iterate each non-closed sprint's items array, match item.id == {{story_key}}
+        2. If not found in any sprint, search backlog array:
+           - Iterate items, match item.id == {{story_key}}
+        3. When item is found: update {{location_context}} = sprint id (e.g., "in sprint-3") or "in backlog (unassigned)"
+        4. If not found in either location: output error and exit workflow without writing
+      </action>
+
+      <check if="item found">
+        <check if="item.status is NOT 'in-progress'">
+          <output>⚠️ Warning: Story {{story_key}} has status "{{item.status}}", expected "in-progress". Updating to "review" anyway — verify this is intentional.</output>
+        </check>
+        <action>Update item.status = "review" in-place (preserve all other fields: id, type, epic, title, priority if present, severity)</action>
+        <action>Update last_updated metadata field to current ISO-8601 timestamp</action>
+        <action>Write back the FULL file preserving ALL sections (epics, backlog, sprints) and ALL comments</action>
+        <output>Story status updated to "review" in sprint-status.yaml ({{location_context}})</output>
+      </check>
+
+      <check if="item NOT found">
+        <!-- Non-blocking warning — story file already updated to "review" above -->
+        <output>Story file updated to "review", but sprint-status.yaml update failed: {{story_key}} not found.
+          Sprint-status.yaml may be out of sync.
+        </output>
+      </check>
     </check>
 
     <check if="{sprint_status} file does NOT exist OR {{current_sprint_status}} == 'no-sprint-tracking'">
-      <output>ℹ️ Story status updated to "review" in story file (no sprint tracking configured)</output>
-    </check>
-
-    <check if="story key not found in sprint status">
-      <output>⚠️ Story file updated, but sprint-status update failed: {{story_key}} not found
-
-        Story status is set to "review" in file, but sprint-status.yaml may be out of sync.
-      </output>
+      <output>Story status updated to "review" in story file (no sprint tracking configured)</output>
     </check>
 
     <!-- Final validation gates -->
@@ -440,7 +499,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
       - Optional: If Test Architect module installed, run `/bmad:tea:automate` to expand guardrail tests
     </action>
 
-    <output>💡 **Tip:** For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
+    <output>Tip: For best results, run `code-review` using a **different** LLM than the one that implemented this story.</output>
     <check if="{sprint_status} file exists">
       <action>Suggest checking {sprint_status} to see project progress</action>
     </check>

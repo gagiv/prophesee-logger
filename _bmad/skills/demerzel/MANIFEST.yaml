@@ -1,0 +1,298 @@
+# MANIFEST.yaml
+
+skills:
+  - id: add-sprint
+    file: add-sprint/SKILL.md
+    description: Guided workflow to create a new sprint entry in the sprints section of sprint-status.yaml with capacity limits, optional ISO dates, and auto-incremented ID
+
+  - id: add-to-sprint
+    file: add-to-sprint/SKILL.md
+    description: Guided workflow to move backlog items to a sprint in the unified sprint-status.yaml using movement semantics
+
+  - id: ai-audit-trail
+    file: ai-audit-trail/SKILL.md
+    description: Tracks AI agent session activity, time spent, and token usage in a project-level AiAudit.md log file.
+    applies_when:
+      - starting a new agent task or workflow
+      - completing a document generation session
+      - finishing any multi-step agent workflow
+    always_load: true
+
+  - id: auto-bug-detection
+    file: auto-bug-detection/SKILL.md
+    description: Instructs agents to identify and report defects in already-delivered code
+
+  - id: bmad-sprint-planning
+    file: bmad-sprint-planning/SKILL.md
+    description: Bootstrap or update the unified sprint-status.yaml from epics. Creates the file with three sections (epics, backlog, sprints) on first run; refreshes epics and adds new items on subsequent runs.
+
+  - id: bmad-sprint-status
+    file: bmad-sprint-status/SKILL.md
+    description: Analyze sprint health, surface risk flags, and recommend next actions from the unified sprint-status.yaml
+
+  - id: cleanup-done
+    file: cleanup-done/SKILL.md
+    description: Archive done and cancelled items — remove from sprint-status.yaml and move story/bug files to done/ subfolder
+
+  - id: close-sprint
+    file: close-sprint/SKILL.md
+    description: Close an active sprint — archive done/cancelled items, disposition incomplete items (move to next sprint or return to backlog), set sprint status to closed
+
+  - id: cmake-best-practices
+    file: cmake-best-practices/SKILL.md
+    description: Enforce target-based, property-oriented CMake patterns (CMake 3.0+).
+    applies_when:
+      - creating or modifying CMakeLists.txt files
+      - managing C++ project dependencies via CMake
+      - defining C++ build configurations
+    always_load: true
+
+  - id: code-documentation
+    file: code-documentation/SKILL.md
+    description: Standardize file headers and method documentation across C++, C#, JS, TS, and Python.
+    applies_when:
+      - creating or modifying source code files
+      - defining new functions, methods, or classes
+      - refactoring code logic
+      - documenting APIs
+    always_load: true
+
+  - id: code-review
+    file: code-review/SKILL.md
+    description: Performs comprehensive code reviews with best practices
+
+  - id: commit-message
+    file: commit-message/SKILL.md
+    description: Generates conventional commit messages from code changes
+
+  - id: cpp-best-practices
+    file: cpp-best-practices/SKILL.md
+    description: Comprehensive C++ coding standards covering naming conventions, modern C++ idioms (C++17/20/23), error handling, and build guidelines. Cross-references domain-specific C++ skills for deep-dives.
+    applies_when:
+      - writing c++ code
+      - modifying c++ code
+      - creating new c++ files or classes
+      - reviewing c++ code style or conventions
+      - refactoring c++ code
+      - setting up a c++ project
+    always_load: true
+
+  - id: cpp-concurrency-safety
+    file: cpp-concurrency-safety/SKILL.md
+    description: Enforce safe multi-threading patterns using RAII locking and task-based parallelism (C++14+).
+    applies_when:
+      - working with C++ threads
+      - using C++ mutexes or locking primitives
+      - performing C++ asynchronous operations
+      - designing multi-threaded C++ systems
+
+  - id: cpp-const-correctness
+    file: cpp-const-correctness/SKILL.md
+    description: Enforce immutability-by-default and push logic to compile-time using constexpr (C++14+).
+    applies_when:
+      - declaring C++ variables
+      - defining C++ member functions
+      - performing C++ compile-time calculations
+      - optimizing C++ logic
+
+  - id: cpp-memory-handling
+    file: cpp-memory-handling/SKILL.md
+    description: Enforces Modern C++ practices (RAII, Smart Pointers) to prevent memory leaks, dangling pointers, and buffer overflows.
+    applies_when:
+      - writing c++ code
+      - modifying memory-intensive C++ logic
+      - debugging memory leaks in c++
+      - implementing new c++ classes
+
+  - id: cpp-modern-composition
+    file: cpp-modern-composition/SKILL.md
+    description: Replace legacy C patterns with STL, Ranges, and modern C++ abstractions (C++14+).
+    applies_when:
+      - writing C++ logic or algorithms
+      - performing C++ refactoring
+      - handling C++ data transformations
+      - working with C++ collections
+    always_load: true
+
+  - id: cpp-robust-interfaces
+    file: cpp-robust-interfaces/SKILL.md
+    description: Enforce contract-based design and strong typing in C++ interfaces (C++14+).
+    applies_when:
+      - creating or modifying C++ header files
+      - designing C++ function signatures
+      - defining C++ APIs or public interfaces
+
+  - id: create-hardened-docker-skill
+    file: create-hardened-docker-skill/SKILL.md
+    description: Creates production-ready hardened Docker configurations following CIS, OWASP, and NIST standards
+
+  - id: csharp-best-practices
+    file: csharp-best-practices/SKILL.md
+    description: Comprehensive C# coding standards covering modern C# (C# 10-12), async/await, LINQ, dependency injection basics, nullable reference types, and testing conventions.
+    applies_when:
+      - writing c# code
+      - creating new c# files or classes
+      - reviewing c# code style or conventions
+      - working with .net projects
+      - setting up a c# project
+    always_load: true
+
+  - id: docker-hardening-verification
+    file: docker-hardening-verification/SKILL.md
+    description: Audits Docker images for security best practices, least privilege, and OpenShift compliance.
+
+  - id: docker-image-signing
+    file: docker-image-signing/SKILL.md
+    description: Automates the signing of Docker images using certificates and Cosign/Notary.
+
+  - id: document-revision-history
+    file: document-revision-history/SKILL.md
+    description: Manages a revision history table at the beginning of generated documents, tracking changes per version.
+    applies_when:
+      - generating or updating planning documents
+      - creating specification or design documents
+      - modifying existing markdown documents that have a revision history table
+
+  - id: generate-backlog
+    file: generate-backlog/SKILL.md
+    description: Generate or refresh the backlog section of sprint-status.yaml from epics and bug stories, preserving existing priorities and sprint assignments
+
+  - id: git-workflow-skill
+    file: git-workflow-skill/SKILL.md
+    description: MANDATORY worktree-based workflow for ALL file-changing activities. Enforces isolated feature branches, conventional commits, and PR-based merging.
+    applies_when:
+      - committing changes
+      - creating branches or PRs
+      - any code writing or modification task
+    always_load: true
+
+  - id: js-ts-dependency-mgmt
+    file: js-ts-dependency-mgmt/SKILL.md
+    description: Standardize package management and security across NPM, Yarn, and PNPM.
+    applies_when:
+      - managing JavaScript or TypeScript project dependencies
+      - configuring package.json, npmrc, or lockfiles
+      - updating NPM/Yarn/PNPM packages
+      - auditing JS/TS supply chain security
+    always_load: true
+
+  - id: js-ts-security-skill
+    file: js-ts-security-skill/SKILL.md
+    description: Verify security of JavaScript and TypeScript codebases against OWASP Top 10 2025 standards
+    applies_when:
+      - writing or reviewing security-critical code
+      - analyzing third-party dependencies
+      - performing security audits
+
+  - id: logging-best-practices
+    file: logging-best-practices/SKILL.md
+    description: Standardizes structured logging across Backend, Frontend, Realtime, and Algorithmic domains with mandatory exception handling.
+    applies_when:
+      - writing new service classes
+      - reviewing or modifying existing log statements
+      - adding error handling
+
+  - id: modify-sprint
+    file: modify-sprint/SKILL.md
+    description: Guided workflow to modify an existing sprint's metadata (name, capacity, dates, status) within the sprints section of sprint-status.yaml
+
+  - id: open-presentation
+    file: open-presentation/SKILL.md
+    description: Opens the BMAD-METHOD AI Development Training presentation from _bmad-output/methodology/
+    applies_when:
+      - user types /open-presentation
+      - user asks to open the methodology presentation or training slides
+
+  - id: opentelemetry-best-practices
+    file: opentelemetry-best-practices/SKILL.md
+    description: Standardizes distributed tracing, metrics, and semantic conventions for high-quality system observability.
+    applies_when:
+      - implementing api endpoints
+      - handling distributed requests
+      - optimizing performance
+      - adding monitoring
+
+  - id: prioritize-backlog
+    file: prioritize-backlog/SKILL.md
+    description: Reprioritize backlog items using multiple criteria -- severity, business value, dependencies, type, age
+
+  - id: python-best-practices
+    file: python-best-practices/SKILL.md
+    description: Comprehensive Python coding standards covering PEP 8 conventions, type hinting (3.10+), modern patterns (match/case, exception groups), async, and packaging best practices. Cross-references security-focused Python skills.
+    applies_when:
+      - writing python code
+      - modifying python code
+      - creating new python files or modules
+      - reviewing python code style or conventions
+      - refactoring python code
+      - setting up a python project
+
+  - id: python-dependency-mgmt
+    file: python-dependency-mgmt/SKILL.md
+    description: Standardize Python dependency handling using uv and pip (requirements.txt).
+    applies_when:
+      - managing Python project dependencies
+      - configuring Python build systems
+      - updating requirements.txt or uv.lock
+      - setting up Python development environments
+    always_load: true
+
+  - id: python-security-skill
+    file: python-security-skill/SKILL.md
+    description: Enforce secure Python coding standards following OWASP Top 10 2025.
+    applies_when:
+      - writing or reviewing Python code
+      - managing Python dependencies
+      - configuring Python application environments
+      - handling sensitive data in Python
+    always_load: true
+
+  - id: remove-from-sprint
+    file: remove-from-sprint/SKILL.md
+    description: Guided workflow to move sprint items back to the backlog in the unified sprint-status.yaml using reverse movement semantics
+
+  - id: self-signed-cert
+    file: self-signed-cert/SKILL.md
+    description: Generates secure self-signed certificates and Root CAs using OpenSSL.
+
+  - id: skill-creator
+    file: skill-creator/SKILL.md
+    description: Guide for creating effective skills that extend Claude's capabilities with specialized knowledge, workflows, and tool integrations
+
+  - id: sprint-status-view
+    file: sprint-status-view/SKILL.md
+    description: Display formatted sprint progress, backlog, and epic status from the unified sprint-status.yaml
+
+  - id: story-status-lookup
+    file: story-status-lookup/SKILL.md
+    description: Looks up the current status of a story by searching the unified sprint-status.yaml (backlog and sprint items arrays) to classify code as delivered or work-in-progress. Supports file-system backend; Jira backend reserved for future configuration.
+    always_load: true
+
+  - id: test-accompanied-development
+    file: test-accompanied-development/SKILL.md
+    description: Enforces writing unit tests for every new public method created by the agent.
+    applies_when:
+      - writing or reviewing public APIs
+      - adding new public methods to a class
+      - code review tasks
+
+  - id: test-generator
+    file: test-generator/SKILL.md
+    description: Generates comprehensive unit and integration tests
+    applies_when:
+      - creating new code files
+      - adding complex logic
+      - refactoring existing code
+
+  - id: vercel-react-best-practices
+    file: vercel-react-best-practices/SKILL.md
+    description: Performance optimization framework for React and Next.js projects with 57 actionable rules across 8 categories
+    applies_when:
+      - working on React or Next.js components
+      - optimizing page performance
+      - reviewing frontend code architecture
+
+  - id: verify-hardened-docker-skill
+    file: verify-hardened-docker-skill/SKILL.md
+    description: Comprehensive security verification for Docker configurations against CIS, OWASP, and NIST standards
+

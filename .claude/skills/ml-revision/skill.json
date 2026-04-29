@@ -1,0 +1,7 @@
+{
+  "name": "ML Iterative Revision",
+  "description": "Formulates the next hypothesis, audits all upstream documents, and generates the task set for the next cycle.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "Revision", "Iteration", "Hypothesis", "Audit", "Demerzel"]
+}

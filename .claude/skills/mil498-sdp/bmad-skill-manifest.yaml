@@ -1,0 +1,5 @@
+type: skill
+name: mil498-sdp
+module: ma-skills
+description: Generate MIL-STD-498 Software Development Plan (SDP)
+version: "1.0.0"

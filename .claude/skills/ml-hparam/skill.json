@@ -1,0 +1,7 @@
+{
+  "name": "ML Hyperparameter Optimization",
+  "description": "Runs structured HPO using Optuna, W&B Sweeps, or Ray Tune after a baseline is confirmed.",
+  "version": "1.0.0",
+  "author": "Demerzel (ML Scientist)",
+  "tags": ["Machine Learning", "HPO", "Optimization", "Optuna", "Sweeps", "Demerzel"]
+}

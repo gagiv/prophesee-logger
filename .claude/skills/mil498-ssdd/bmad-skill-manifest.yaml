@@ -1,0 +1,5 @@
+type: skill
+name: mil498-ssdd
+module: ma-skills
+description: Generate MIL-STD-498 System/Subsystem Design Description (SSDD)
+version: "1.0.0"

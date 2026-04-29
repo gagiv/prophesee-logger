@@ -1,8 +1,8 @@
 # Sprint Planning Workflow
 
-**Goal:** Generate sprint status tracking from epics, detecting current story statuses and building a complete sprint-status.yaml file.
+**Goal:** Bootstrap or refresh the unified `sprint-status.yaml` from epics, building a complete three-section file (`epics`, `backlog`, `sprints`).
 
-**Your Role:** You are a Developer generating and maintaining sprint tracking. Parse epic files, detect story statuses, and produce a structured sprint-status.yaml.
+**Your Role:** You are a Scrum Master bootstrapping or refreshing sprint tracking. Parse epic files, scan bugs, detect story statuses, and produce or update a structured `sprint-status.yaml` with the unified schema.
 
 ---
 
@@ -16,7 +16,7 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `communication_language`, `document_output_language`
 - `implementation_artifacts`
 - `planning_artifacts`
-- `date` as system-generated current datetime
+- `date` as system-generated current ISO-8601 datetime
 - YOU MUST ALWAYS SPEAK OUTPUT in your Agent communication style with the config `{communication_language}`
 
 ### Paths
@@ -24,16 +24,17 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - `tracking_system` = `file-system`
 - `project_key` = `NOKEY`
 - `story_location` = `{implementation_artifacts}`
-- `story_location_absolute` = `{implementation_artifacts}`
 - `epics_location` = `{planning_artifacts}`
 - `epics_pattern` = `*epic*.md`
 - `status_file` = `{implementation_artifacts}/sprint-status.yaml`
+- `done_folder` = `{implementation_artifacts}/done/`
 
 ### Input Files
 
 | Input | Path | Load Strategy |
 |-------|------|---------------|
-| Epics | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/*epic*/*.md` (sharded) | FULL_LOAD |
+| Epics | `{planning_artifacts}/*epic*.md` (whole) or `{planning_artifacts}/epics/index.md` + parts (sharded) | FULL_LOAD |
+| Bugs | `{implementation_artifacts}/bug-*.md` | FULL_LOAD |
 
 ### Context
 
@@ -43,36 +44,27 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 
 ## EXECUTION
 
-### Document Discovery - Full Epic Loading
-
-**Strategy**: Sprint planning needs ALL epics and stories to build complete status tracking.
-
-**Epic Discovery Process:**
-
-1. **Search for whole document first** - Look for `epics.md`, `bmm-epics.md`, or any `*epic*.md` file
-2. **Check for sharded version** - If whole document not found, look for `epics/index.md`
-3. **If sharded version found**:
-   - Read `index.md` to understand the document structure
-   - Read ALL epic section files listed in the index (e.g., `epic-1.md`, `epic-2.md`, etc.)
-   - Process all epics and their stories from the combined content
-   - This ensures complete sprint status coverage
-4. **Priority**: If both whole and sharded versions exist, use the whole document
-
-**Fuzzy matching**: Be flexible with document names - users may use variations like `epics.md`, `bmm-epics.md`, `user-stories.md`, etc.
-
 <workflow>
 
 <step n="1" goal="Parse epic files and extract all work items">
-<action>Load {project_context} for project-wide patterns and conventions (if exists)</action>
-<action>Communicate in {communication_language} with {user_name}</action>
-<action>Look for all files matching `{epics_pattern}` in {epics_location}</action>
-<action>Could be a single `epics.md` file or multiple `epic-1.md`, `epic-2.md` files</action>
+<action>Load `{project_context}` for project-wide patterns and conventions (if exists)</action>
+<action>Communicate in `{communication_language}` with `{user_name}`</action>
+
+**Epic Discovery Process:**
+
+1. Search for whole document first — look for `epics.md`, `bmm-epics.md`, or any `*epic*.md` file in `{epics_location}`
+2. If whole document not found, look for `epics/index.md` (sharded version)
+3. If sharded version found:
+   - Read `index.md` to understand structure
+   - Read ALL epic section files listed in the index (e.g., `epic-1.md`, `epic-2.md`)
+   - Process all epics and stories from combined content
+4. If both whole and sharded versions exist, use the whole document
 
 <action>For each epic file found, extract:</action>
 
 - Epic numbers from headers like `## Epic 1:` or `## Epic 2:`
 - Story IDs and titles from patterns like `### Story 1.1: User Authentication`
-- Convert story format from `Epic.Story: Title` to kebab-case key: `epic-story-title`
+- Epic status cues from narrative text: keywords like "in progress", "started", "active" → `in-progress`; "on hold", "paused", "blocked" → `on-hold`; "cancelled", "dropped" → `cancelled`; default → `backlog`
 
 **Story ID Conversion Rules:**
 
@@ -81,183 +73,300 @@ Load config from `{project-root}/_bmad/bmm/config.yaml` and resolve:
 - Convert title to kebab-case: `user-authentication`
 - Final key: `1-1-user-authentication`
 
-<action>Build complete inventory of all epics and stories from all epic files</action>
+<action>Build complete inventory: `{{all_epics}}` (list of epic numbers + titles + detected statuses) and `{{all_stories}}` (list of story objects: `id`, `epic_num`, `title`)</action>
 </step>
 
-<step n="2" goal="Build sprint status structure">
-<action>For each epic found, create entries in this order:</action>
+<step n="2" goal="Scan bug files">
+<action>Glob `{implementation_artifacts}/bug-*.md` to find all bug story files</action>
+<check if="no bug files found">
+  <action>Set `{{all_bugs}}` = [] (empty list)</action>
+</check>
+<check if="bug files found">
+  <action>For each bug file, parse YAML frontmatter to extract: `title`, `severity`, `status`</action>
+  <action>Derive bug ID from filename: strip path and `.md` extension, then prefix with `BUG-` after removing `bug-` prefix (e.g., `bug-path-spaces.md` → `BUG-path-spaces`)</action>
+  <action>Set `{{all_bugs}}` = list of bug objects: `id`, `title`, `severity` (default `medium` if missing), `status` (default `backlog` if missing)</action>
+</check>
+</step>
 
-1. **Epic entry** - Key: `epic-{num}`, Default status: `backlog`
-2. **Story entries** - Key: `{epic}-{story}-{title}`, Default status: `backlog`
-3. **Retrospective entry** - Key: `epic-{num}-retrospective`, Default status: `optional`
+<step n="3" goal="Mode detection — bootstrap vs refresh">
+<check if="`{status_file}` does NOT exist">
+  <action>Set `{{mode}}` = `bootstrap`</action>
+  <action>Proceed to Step 4 then Step 5</action>
+</check>
+<check if="`{status_file}` EXISTS">
+  <action>Set `{{mode}}` = `refresh`</action>
+  <action>Read existing `{status_file}` into `{{existing_file}}`</action>
+  <action>Proceed to Step 4 then Step 6</action>
+</check>
+</step>
 
-**Example structure:**
+<step n="4" goal="Done exclusion scan">
+<action>Scan `{done_folder}` for archived files. Build `{{done_item_ids}}` = set of basenames (without `.md`) from all files in the done folder (e.g., `done/1-1-user-auth.md` → `1-1-user-auth`)</action>
+<check if="`{{mode}}` == `refresh`">
+  <action>Scan `{{existing_file}}` for items with `status: done` in `backlog` or any `sprints[*].items`</action>
+  <check if="any done items found in backlog or sprints">
+    <output>
+## Warning: Done Items Detected in Active File
+
+The following items have `status: done` but are still present in the active `sprint-status.yaml`:
+
+{{#each done_items_in_file}}
+- `{{id}}` (in: {{location}})
+{{/each}}
+
+These items should be archived before adding new items. Consider running `cleanup-done` (Story 17.14) to archive them first.
+
+Continuing with planning — done items will be excluded from new additions.
+    </output>
+    <action>Add these IDs to `{{done_item_ids}}`</action>
+  </check>
+</check>
+</step>
+
+<step n="5" goal="Bootstrap mode — build complete file from scratch">
+<check if="`{{mode}}` != `bootstrap`">
+  <action>Skip this step</action>
+</check>
+
+**Build metadata:**
+- `generated` = `{date}` (current ISO-8601 datetime)
+- `last_updated` = `{date}`
+- `project` = `{project_name}`
+- `project_key` = `NOKEY`
+- `tracking_system` = `file-system`
+- `story_location` = `{story_location}`
+
+**Build `epics` section:**
+<action>For each epic in `{{all_epics}}`:
+  - Key: `epic-{epic_num}`
+  - `status`: use detected status from epic narrative, default `backlog`
+  - `retrospective`: `optional`
+</action>
+
+**Build `backlog` section:**
+<action>Combine `{{all_stories}}` and `{{all_bugs}}` into a candidate list</action>
+<action>For each candidate item:
+  - Skip if item ID is in `{{done_item_ids}}`
+  - For stories: detect status by checking if `{story_location}/{story_id}.md` exists → `ready-for-dev`; else → `backlog`
+  - Assign `priority` = sequential index (1, 2, 3...) ordered by: critical bugs first, then by epic order
+</action>
+
+**Ordering rules:**
+1. Bugs with `severity: critical` — highest priority group
+2. Stories by epic order, then story number within epic
+3. Bugs with `severity: high`, `medium`, `low` — after stories
+
+<action>Build backlog array with each item:
+  - `id`: story ID (e.g., `1-1-user-auth`) or bug ID (e.g., `BUG-path-spaces`)
+  - `type`: `story` or `bug`
+  - `epic`: epic number as integer for stories, `null` for bugs
+  - `title`: story/bug title
+  - `priority`: sequential integer (1 = highest)
+  - `status`: detected status for stories, `backlog` for bugs (or from frontmatter if set)
+  - `severity`: `null` for stories, value for bugs
+</action>
+
+**`sprints` section:** empty map `{}`
+
+<action>Write complete `sprint-status.yaml` to `{status_file}` with the following structure:</action>
 
 ```yaml
-development_status:
-  epic-1: backlog
-  1-1-user-authentication: backlog
-  1-2-account-management: backlog
-  epic-1-retrospective: optional
-```
+generated: "{date}"
+last_updated: "{date}"
+project: "{project_name}"
+project_key: NOKEY
+tracking_system: file-system
+story_location: "{story_location}"
 
+epics:
+  epic-1:
+    status: {status}
+    retrospective: optional
+  # ... all epics
+
+backlog:
+  - id: "{id}"
+    type: {story|bug}
+    epic: {num|null}
+    title: "{title}"
+    priority: {n}
+    status: {status}
+    severity: {null|critical|high|medium|low}
+  # ... all non-done items
+
+sprints: {}
+```
 </step>
 
-<step n="3" goal="Apply intelligent status detection">
-<action>For each story, detect current status by checking files:</action>
+<step n="6" goal="Refresh mode — additive merge">
+<check if="`{{mode}}` != `refresh`">
+  <action>Skip this step</action>
+</check>
 
-**Story file detection:**
+<action>Read existing `{{existing_file}}`:
+  - Extract `generated` timestamp (preserve — never change)
+  - Extract existing `epics` section
+  - Extract existing `backlog` array
+  - Extract existing `sprints` map
+</action>
 
-- Check: `{story_location_absolute}/{story-key}.md` (e.g., `stories/1-1-user-authentication.md`)
-- If exists → upgrade status to at least `ready-for-dev`
+**Regenerate `epics` section (reference data — always overwritten with preservation):**
+<action>For each epic in `{{all_epics}}`:
+  - If epic already exists in `{{existing_file.epics}}`:
+    - Apply never-downgrade rule for `status`: keep existing if it's more advanced than detected
+    - Status advancement order: `backlog` < `in-progress` < `done` (never downgrade; `on-hold` and `cancelled` are sticky)
+    - Preserve existing `retrospective` value
+  - If epic is NEW (not in existing file):
+    - Set `status` = detected status from narrative (default `backlog`)
+    - Set `retrospective` = `optional`
+</action>
 
-**Preservation rule:**
+**Status preservation rules (never downgrade):**
+- If existing `status` is `done` → keep `done` regardless
+- If existing `status` is `in-progress` and detected is `backlog` → keep `in-progress`
+- If existing `status` is `on-hold` → keep `on-hold` (sticky)
+- If existing `status` is `cancelled` → keep `cancelled` (terminal state)
+- Otherwise → use detected status
 
-- If existing `{status_file}` exists and has more advanced status, preserve it
-- Never downgrade status (e.g., don't change `done` to `ready-for-dev`)
+**Build exclusion sets:**
+<action>
+  - `{{existing_backlog_ids}}` = set of all `id` values in existing `backlog` array
+  - `{{sprint_item_ids}}` = set of all `id` values in any `sprints[*].items` array
+  - `{{excluded_ids}}` = union of `{{existing_backlog_ids}}`, `{{sprint_item_ids}}`, `{{done_item_ids}}`
+</action>
 
-**Status Flow Reference:**
+**Identify new items:**
+<action>For each story in `{{all_stories}}`:
+  - If story ID is NOT in `{{excluded_ids}}` → it is a NEW item to append
+</action>
+<action>For each bug in `{{all_bugs}}`:
+  - If bug ID is NOT in `{{excluded_ids}}` → it is a NEW item to append
+</action>
 
-- Epic: `backlog` → `in-progress` → `done`
-- Story: `backlog` → `ready-for-dev` → `in-progress` → `review` → `done`
-- Retrospective: `optional` ↔ `done`
-  </step>
+**Append new items to backlog:**
+<action>Calculate `{{max_priority}}` = maximum `priority` value in existing backlog (0 if empty)</action>
+<action>For each new item (stories first in epic order, then bugs):
+  - Assign `priority` = `{{max_priority}}` + sequential increment (1, 2, 3...)
+  - For stories: detect status by checking if `{story_location}/{story_id}.md` exists → `ready-for-dev`; else → `backlog`
+  - For bugs: use status from frontmatter or default `backlog`
+  - Build item with same schema as bootstrap mode
+</action>
 
-<step n="4" goal="Generate sprint status file">
-<action>Create or update {status_file} with:</action>
+**Preserve existing sections:**
+- `backlog`: keep all existing items unchanged (status, priority, all fields) + append new items at end
+- `sprints`: pass through unchanged — do NOT modify sprint data
 
-**File Structure:**
+**Update metadata:**
+- `last_updated` = `{date}` (current ISO-8601 datetime)
+- `generated` = preserve original value (NEVER change)
 
-```yaml
-# generated: {date}
-# last_updated: {date}
-# project: {project_name}
-# project_key: {project_key}
-# tracking_system: {tracking_system}
-# story_location: {story_location}
-
-# STATUS DEFINITIONS:
-# ==================
-# Epic Status:
-#   - backlog: Epic not yet started
-#   - in-progress: Epic actively being worked on
-#   - done: All stories in epic completed
-#
-# Epic Status Transitions:
-#   - backlog → in-progress: Automatically when first story is created (via create-story)
-#   - in-progress → done: Manually when all stories reach 'done' status
-#
-# Story Status:
-#   - backlog: Story only exists in epic file
-#   - ready-for-dev: Story file created in stories folder
-#   - in-progress: Developer actively working on implementation
-#   - review: Ready for code review (via Dev's code-review workflow)
-#   - done: Story completed
-#
-# Retrospective Status:
-#   - optional: Can be completed but not required
-#   - done: Retrospective has been completed
-#
-# WORKFLOW NOTES:
-# ===============
-# - Epic transitions to 'in-progress' automatically when first story is created
-# - Stories can be worked in parallel if team capacity allows
-# - Developer typically creates next story after previous one is 'done' to incorporate learnings
-# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
-
-generated: { date }
-last_updated: { date }
-project: { project_name }
-project_key: { project_key }
-tracking_system: { tracking_system }
-story_location: { story_location }
-
-development_status:
-  # All epics, stories, and retrospectives in order
-```
-
-<action>Write the complete sprint status YAML to {status_file}</action>
-<action>CRITICAL: Metadata appears TWICE - once as comments (#) for documentation, once as YAML key:value fields for parsing</action>
-<action>Ensure all items are ordered: epic, its stories, its retrospective, next epic...</action>
+<action>Write updated `sprint-status.yaml` to `{status_file}` (atomic read-modify-write)</action>
 </step>
 
-<step n="5" goal="Validate and report">
-<action>Perform validation checks:</action>
+<step n="7" goal="Validation">
+<action>Run validation checklist (see checklist.md):</action>
 
-- [ ] Every epic in epic files appears in {status_file}
-- [ ] Every story in epic files appears in {status_file}
-- [ ] Every epic has a corresponding retrospective entry
-- [ ] No items in {status_file} that don't exist in epic files
-- [ ] All status values are legal (match state machine definitions)
 - [ ] File is valid YAML syntax
+- [ ] Exactly 6 metadata fields present: `generated`, `last_updated`, `project`, `project_key`, `tracking_system`, `story_location`
+- [ ] Exactly 3 data sections: `epics`, `backlog`, `sprints`
+- [ ] Every epic in `epics.md` appears in the `epics` section
+- [ ] Every story in `epics.md` appears in exactly one location: `backlog`, a sprint's `items`, or `done/` folder
+- [ ] No item ID appears in more than one active location (single-location invariant)
+- [ ] All epic `status` values are legal: `backlog`, `in-progress`, `done`, `on-hold`, `cancelled`
+- [ ] All item `status` values are legal: `backlog`, `ready-for-dev`, `in-progress`, `review`, `done`, `on-hold`, `cancelled`
+- [ ] Backlog `priority` values are sequential 1..N matching array positions
+- [ ] `sprints` section is unchanged from existing (refresh mode only)
+- [ ] `generated` timestamp is unchanged (refresh mode only)
 
-<action>Count totals:</action>
+<check if="validation fails">
+  <output>
+## Validation Errors
 
-- Total epics: {{epic_count}}
-- Total stories: {{story_count}}
-- Epics in-progress: {{in_progress_count}}
-- Stories done: {{done_count}}
+The following issues were detected:
 
-<action>Display completion summary to {user_name} in {communication_language}:</action>
+{{#each validation_errors}}
+- {{message}}
+{{/each}}
 
-**Sprint Status Generated Successfully**
+Please review and correct the file before proceeding.
+  </output>
+</check>
+</step>
 
-- **File Location:** {status_file}
-- **Total Epics:** {{epic_count}}
-- **Total Stories:** {{story_count}}
-- **Epics In Progress:** {{in_progress_count}}
-- **Stories Completed:** {{done_count}}
+<step n="8" goal="Report summary">
+<action>Count and display totals:</action>
 
-**Next Steps:**
+<output>
+## Sprint Planning Complete
 
-1. Review the generated {status_file}
-2. Use this file to track development progress
-3. Agents will update statuses as they work
-4. Re-run this workflow to refresh auto-detected statuses
+**Mode:** {{mode}} ({{#if bootstrap}}first run — file created{{else}}refresh — file updated{{/if}})
+**File:** `{status_file}`
 
+### Summary
+
+| Section | Count |
+|---------|-------|
+| Total epics | {{epic_count}} |
+| Total stories | {{story_count}} |
+| Total bugs | {{bug_count}} |
+{{#if refresh}}
+| New items added | {{new_items_count}} |
+| Items preserved (backlog) | {{preserved_backlog_count}} |
+| Items excluded (sprint-assigned) | {{sprint_assigned_count}} |
+| Items excluded (done-archived) | {{done_archived_count}} |
+{{/if}}
+
+### Epic Status Overview
+
+| Epic | Title | Status |
+|------|-------|--------|
+{{#each epics_summary}}
+| `{{id}}` | {{title}} | {{status}} |
+{{/each}}
+
+### Next Steps
+
+1. Review the generated `{status_file}`
+2. Run `generate-backlog` to refresh and reprioritize backlog items
+3. Run `add-sprint` to create a sprint for the next iteration
+4. Run `add-to-sprint` to assign backlog items to a sprint
+</output>
 </step>
 
 </workflow>
 
+---
+
 ## Additional Documentation
 
-### Status State Machine
+### Status State Machines
 
 **Epic Status Flow:**
-
 ```
 backlog → in-progress → done
+              ↕
+           on-hold
+
+Any non-done → cancelled (terminal)
 ```
 
-- **backlog**: Epic not yet started
-- **in-progress**: Epic actively being worked on (stories being created/implemented)
-- **done**: All stories in epic completed
-
-**Story Status Flow:**
-
+**Story/Bug Status Flow:**
 ```
 backlog → ready-for-dev → in-progress → review → done
+               ↕              ↕           ↕
+            on-hold        on-hold      on-hold
+
+Any non-done → cancelled (terminal)
 ```
 
-- **backlog**: Story only exists in epic file
-- **ready-for-dev**: Story file created (e.g., `stories/1-3-plant-naming.md`)
-- **in-progress**: Developer actively working
-- **review**: Ready for code review (via Dev's code-review workflow)
-- **done**: Completed
+### Never-Downgrade Rule
 
-**Retrospective Status:**
+Status is never downgraded on refresh. If the existing file says `in-progress`, a re-detected `backlog` from the epic file does NOT override it. This ensures human-set statuses are preserved across planning runs.
 
+### Three-Section Schema Summary
+
+```yaml
+epics:        # Map keyed by epic-N — regenerated each run with preservation
+backlog:      # Array of items — additive only (new items appended, existing preserved)
+sprints:      # Map keyed by sprint-N — NEVER modified by this skill
 ```
-optional ↔ done
-```
-
-- **optional**: Ready to be conducted but not required
-- **done**: Finished
-
-### Guidelines
-
-1. **Epic Activation**: Mark epic as `in-progress` when starting work on its first story
-2. **Sequential Default**: Stories are typically worked in order, but parallel work is supported
-3. **Parallel Work Supported**: Multiple stories can be `in-progress` if team capacity allows
-4. **Review Before Done**: Stories should pass through `review` before `done`
-5. **Learning Transfer**: Developer typically creates next story after previous one is `done` to incorporate learnings

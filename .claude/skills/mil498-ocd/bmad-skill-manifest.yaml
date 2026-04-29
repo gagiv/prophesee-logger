@@ -1,0 +1,5 @@
+type: skill
+name: mil498-ocd
+module: ma-skills
+description: Generate MIL-STD-498 Operational Concept Description (OCD)
+version: "1.0.0"

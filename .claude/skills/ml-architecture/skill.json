@@ -1,0 +1,7 @@
+{
+  "name": "ML Architecture Design",
+  "description": "Selects the model stack, experiment tracking tools, and defines the system-level ML architecture.",
+  "version": "1.0.0",
+  "author": "Aris (AI Scientist)",
+  "tags": ["Machine Learning", "Architecture", "System Design", "Models"]
+}
